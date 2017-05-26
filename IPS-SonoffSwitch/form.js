@@ -1,6 +1,6 @@
 {
   "elements":
   [
-    { "type": "ValidationTextBox", "name": "Topic", "caption": "Sonoff Topic" }
+    { "type": "ValidationTextBox", "name": "Topic", "caption": "Sonoff MQTT Topic" },
   ]
 }
