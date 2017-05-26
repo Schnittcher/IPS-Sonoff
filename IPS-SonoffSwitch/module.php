@@ -24,7 +24,7 @@ class IPS_SonoffSwitch extends IPSModule {
       // Buffer decodieren und in eine Variable schreiben
       $Buffer = utf8_decode($data->Buffer);
       // Und Diese dann wieder dekodieren
-      IPS_LogMessage("SonoffSwitch",$data->Buffer);
+      IPS_LogMessage("SonoffSwitch",$data->Buffer->POWER);
     }
 
   public function Destroy() {
