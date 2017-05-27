@@ -8,7 +8,8 @@ class IPS_SonoffSwitch extends IPSModule {
       //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
       $this->RegisterPropertyString("Topic","");
 
-
+      $variablenID = $this->RegisterVariableBoolean("SonoffStatus", "Status","~Switch");
+      $this->EnableAction("SonoffStatus");
 
   }
   public function ApplyChanges() {
@@ -18,8 +19,6 @@ class IPS_SonoffSwitch extends IPSModule {
       //Setze Filter für ReceiveData
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
-      $variablenID = $this->RegisterVariableBoolean("SonoffStatus", "Status");
-      $this->EnableAction("SonoffStatus");
     }
 
     public function ReceiveData($JSONString) {
@@ -30,6 +29,8 @@ class IPS_SonoffSwitch extends IPSModule {
       $Buffer = utf8_decode($data->Buffer);
       // Und Diese dann wieder dekodieren
       IPS_LogMessage("SonoffSwitch",$data->Buffer);
+
+      $this->SendDebug("Buffer", $data->Buffer->MSG->POWER,0);
     }
 
   public function setStatus($Value) {
