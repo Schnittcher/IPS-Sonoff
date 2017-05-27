@@ -18,10 +18,10 @@ class IPS_SonoffSwitch extends IPSModule {
       //Setze Filter für ReceiveData
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
-      $variablenID = $this->RegisterVariableBoolean("SonoffSwitchStatus", "Status");
-      $this->EnableAction("SonoffSwitchStatus");
+      $variablenID = $this->RegisterVariableBoolean("SonoffStatus", "Status");
+      $this->EnableAction("SonoffStatus");
     }
-    
+
     public function ReceiveData($JSONString) {
       $this->SendDebug("JSON", $JSONString,0);
       $data = json_decode($JSONString);
@@ -33,13 +33,13 @@ class IPS_SonoffSwitch extends IPSModule {
     }
 
   public function setStatus($Value) {
-    SetValue($this->GetIDForIdent("SonoffSwitchStatus"), $Value);
+    SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
     //@$this->SendDataToParent(json_encode(Array("DataID" => "{66900AB7-4164-4AB3-9F86-703A38CD5DA0}", "Action" => "Station", "Buffer" => $StationNumber)));
 }
 
     public function RequestAction($Ident, $Value) {
       switch ($Ident) {
-        case "SonoffSwitchStatus":
+        case "SonoffStatus":
           $result = $this->setStatus($Value);
           break;
         default:
