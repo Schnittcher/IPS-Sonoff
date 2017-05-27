@@ -7,6 +7,8 @@ class IPS_SonoffSwitch extends IPSModule {
       $this->ConnectParent("{D806E782-7A08-4BB5-BA8C-1F20A40C1C9D}");
       //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
       $this->RegisterPropertyString("Topic","");
+      $variablenID = $this->RegisterVariableBoolean("SonoffSwitchStatus", "Status");
+      $this->EnableAction("SonoffSwitchStatus");
       //99 Geräte können pro Konfirgurationsform angelegt werden
   }
   public function ApplyChanges() {
@@ -27,7 +29,19 @@ class IPS_SonoffSwitch extends IPSModule {
       IPS_LogMessage("SonoffSwitch",$data->Buffer);
     }
 
-  public function Destroy() {
-  }
+  public function setStatus($Value) {
+    SetValue($this->GetIDForIdent("SonoffSwitchStatus"), $Value);
+    //@$this->SendDataToParent(json_encode(Array("DataID" => "{66900AB7-4164-4AB3-9F86-703A38CD5DA0}", "Action" => "Station", "Buffer" => $StationNumber)));
+}
+
+    public function RequestAction($Ident, $Value) {
+      switch ($Ident) {
+        case "SonoffSwitchStatus":
+          $result = $this->setStatus($Value);
+          break;
+        default:
+          throw new Exception("Invalid ident");
+      }
+    }
 }
 ?>
