@@ -16,7 +16,7 @@ class IPS_SonoffSwitch extends IPSModule {
       //Never delete this line!
       parent::ApplyChanges();
       $this->ConnectParent("{D806E782-7A08-4BB5-BA8C-1F20A40C1C9D}");
-      //Setze Filter für ReceiveData
+      //Setze Filter fÃ¼r ReceiveData
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
     }
@@ -29,13 +29,28 @@ class IPS_SonoffSwitch extends IPSModule {
       $Buffer = utf8_decode($data->Buffer);
       // Und Diese dann wieder dekodieren
       IPS_LogMessage("SonoffSwitch",$data->Buffer);
-
-      $this->SendDebug("Buffer", $data->Buffer->MSG->POWER,0);
+	  $Buffer = json_decode($data->Buffer);
+	  if (fnmatch("*POWER", $Buffer->TOPIC)) {
+		  $this->SendDebug("Power", $Buffer->MSG,0);
+		  SetValue($this->GetIDForIdent("SonoffStatus"), $Buffer->MSG);
+	  }
+      $this->SendDebug("Buffer", $Buffer->TOPIC,0);
     }
 
   public function setStatus($Value) {
     SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
-    //@$this->SendDataToParent(json_encode(Array("DataID" => "{66900AB7-4164-4AB3-9F86-703A38CD5DA0}", "Action" => "Station", "Buffer" => $StationNumber)));
+	$topic = "cmnd/".$this->ReadPropertyString("Topic")."/power";
+	$msg = $Value;
+	if($msg===false){$msg = 'false';}
+	elseif($msg===true){$msg = 'true';}
+	//$type = $info['VariableType'];
+	//$topic .= '/'.$type;
+	$Buffer["Topic"] = $topic;
+	$Buffer["MSG"] = $msg;
+	$BufferJSON = json_encode($Buffer);
+	//MQTT_Publish(33877 /*[MQTT Client]*/, $topic,$msg,0,0);
+	$this->SendDebug("setStatus", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
 }
 
     public function RequestAction($Ident, $Value) {
