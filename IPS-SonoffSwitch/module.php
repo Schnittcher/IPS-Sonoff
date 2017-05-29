@@ -4,7 +4,7 @@ class IPS_SonoffSwitch extends IPSModule {
   public function Create() {
       //Never delete this line!
       parent::Create();
-      $this->ConnectParent("{D806E782-7A08-4BB5-BA8C-1F20A40C1C9D}");
+      $this->ConnectParent("{EE0D345A-CF31-428A-A613-33CE98E752DD}");
       //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
       $this->RegisterPropertyString("Topic","");
 
@@ -15,7 +15,7 @@ class IPS_SonoffSwitch extends IPSModule {
   public function ApplyChanges() {
       //Never delete this line!
       parent::ApplyChanges();
-      $this->ConnectParent("{D806E782-7A08-4BB5-BA8C-1F20A40C1C9D}");
+      $this->ConnectParent("{EE0D345A-CF31-428A-A613-33CE98E752DD}");
       //Setze Filter fÃ¼r ReceiveData
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
