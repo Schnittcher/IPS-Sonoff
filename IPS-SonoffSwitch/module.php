@@ -52,7 +52,6 @@ class IPS_SonoffSwitch extends IPSModule {
     SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
 	$topic = "cmnd/".$this->ReadPropertyString("Topic")."/power";
 	$msg = $Value;
-  $this->SendDebug("setStatus", $BufferJSON,0);
 	if($msg===false){$msg = 'false';}
 	elseif($msg===true){$msg = 'true';}
 	//$type = $info['VariableType'];
