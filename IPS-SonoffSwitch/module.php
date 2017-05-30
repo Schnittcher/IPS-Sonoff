@@ -24,6 +24,8 @@ class IPS_SonoffSwitch extends IPSModule {
     public function ReceiveData($JSONString) {
       $this->SendDebug("JSON", $JSONString,0);
       $data = json_decode($JSONString);
+      $off = $this->ReadPropertyString("Off");
+      $on = $this->ReadPropertyString("On");
 
       // Buffer decodieren und in eine Variable schreiben
       $Buffer = utf8_decode($data->Buffer);
@@ -32,7 +34,14 @@ class IPS_SonoffSwitch extends IPSModule {
 	  $Buffer = json_decode($data->Buffer);
 	  if (fnmatch("*POWER", $Buffer->TOPIC)) {
 		  $this->SendDebug("Power", $Buffer->MSG,0);
-		  SetValue($this->GetIDForIdent("SonoffStatus"), $Buffer->MSG);
+      switch ($Buffer->MSG) {
+        case $off:
+          SetValue($this->GetIDForIdent("SonoffStatus"), 0);
+          break;
+        case $on:
+          SetValue($this->GetIDForIdent("SonoffStatus"), 1);
+          break;
+      }
 	  }
       $this->SendDebug("Buffer", $Buffer->TOPIC,0);
     }
@@ -41,6 +50,7 @@ class IPS_SonoffSwitch extends IPSModule {
     SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
 	$topic = "cmnd/".$this->ReadPropertyString("Topic")."/power";
 	$msg = $Value;
+  $this->SendDebug("setStatus", $BufferJSON,0);
 	if($msg===false){$msg = 'false';}
 	elseif($msg===true){$msg = 'true';}
 	//$type = $info['VariableType'];
