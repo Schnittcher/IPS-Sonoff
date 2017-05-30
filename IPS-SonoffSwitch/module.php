@@ -7,6 +7,8 @@ class IPS_SonoffSwitch extends IPSModule {
       $this->ConnectParent("{EE0D345A-CF31-428A-A613-33CE98E752DD}");
       //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
       $this->RegisterPropertyString("Topic","");
+      $this->RegisterPropertyString("On","1");
+      $this->RegisterPropertyString("Off","0");
 
       $variablenID = $this->RegisterVariableBoolean("SonoffStatus", "Status","~Switch");
       $this->EnableAction("SonoffStatus");
