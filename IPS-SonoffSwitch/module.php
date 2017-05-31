@@ -9,6 +9,7 @@ class IPS_SonoffSwitch extends IPSModule {
       $this->RegisterPropertyString("Topic","");
       $this->RegisterPropertyString("On","1");
       $this->RegisterPropertyString("Off","0");
+      $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
 
       $variablenID = $this->RegisterVariableBoolean("SonoffStatus", "Status","~Switch");
       $this->EnableAction("SonoffStatus");
@@ -28,6 +29,7 @@ class IPS_SonoffSwitch extends IPSModule {
       $data = json_decode($JSONString);
       $off = $this->ReadPropertyString("Off");
       $on = $this->ReadPropertyString("On");
+      $FullTopic =
 
       // Buffer decodieren und in eine Variable schreiben
       $Buffer = utf8_decode($data->Buffer);
@@ -49,19 +51,32 @@ class IPS_SonoffSwitch extends IPSModule {
     }
 
   public function setStatus($Value) {
-    SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
+  SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
+
+  $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
+  $PrefixIndex = array_search("%prefix%",$FullTopic);
+  $TopicIndex = array_search("%topic%",$FullTopic);
+
+  $SetCommandArr = $FullTopic;
+  $index = count($SetCommandArr);
+
+  $SetCommandArr[$PrefixIndex] = "cmnd";
+  $SetCommandArr[$TopicIndex] = "sonoff52";
+  $SetCommandArr[$index] = "power";
+
+  $topic = implode("/",$SetCommandArr);
 	$topic = "cmnd/".$this->ReadPropertyString("Topic")."/power";
 	$msg = $Value;
+
 	if($msg===false){$msg = 'false';}
 	elseif($msg===true){$msg = 'true';}
-	//$type = $info['VariableType'];
-	//$topic .= '/'.$type;
+
 	$Buffer["Topic"] = $topic;
 	$Buffer["MSG"] = $msg;
 	$BufferJSON = json_encode($Buffer);
 	//MQTT_Publish(33877 /*[MQTT Client]*/, $topic,$msg,0,0);
 	$this->SendDebug("setStatus", $BufferJSON,0);
-    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
 }
 
     public function RequestAction($Ident, $Value) {
