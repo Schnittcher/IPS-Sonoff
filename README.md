@@ -25,12 +25,9 @@ IPS-SonoffSwitch:
 ```
 https://github.com/Schnittcher/IPS-Sonoff.git
 ```
-
-Als erstes muss der Splitter für die MQTT (IPS_KS_MQTTClient) Kommunikation angelegt werden.
-Der Splitter erstellt automatisch einen Client Sockt mit dem Namen: MQTT Client Socket, in diesem Client Socket wird die Verbindung zum Mosquitto Broker eingetragen.
+Als erstes kann der IPS-SonoffSwitch angelegt werden, dadurch wird als Parent Instanz der MQTT Splitter (IPS_KS_MQTTClient) angelegt.
+Der Splitter (IPS_KS_MQTTClient) erstellt automatisch einen Client Sockt mit dem Namen: MQTT Client Socket, in diesem Client Socket wird die Verbindung zum Mosquitto Broker eingetragen.
 Sobald dies geschehen ist muss die Instanz des Splitters (IPS_KS_MQTTClient) über den Button "Active Instance" aktiviert werden.
-
-Als nächstes kann der IPS-SonoffSwitch angelegt werden. Dort wird als Parent Instanz der MQTT Splitter (IPS_KS_MQTTClient) angeben.
 
 ## 3. Konfiguration IPS-SonoffSwitch
 
