@@ -64,7 +64,6 @@ class IPS_SonoffSwitch extends IPSModule {
   $SetCommandArr[$index] = "power";
 
   $topic = implode("/",$SetCommandArr);
-	$topic = "cmnd/".$this->ReadPropertyString("Topic")."/power";
 	$msg = $Value;
 
 	if($msg===false){$msg = 'false';}
