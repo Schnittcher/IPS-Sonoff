@@ -29,7 +29,6 @@ class IPS_SonoffSwitch extends IPSModule {
       $data = json_decode($JSONString);
       $off = $this->ReadPropertyString("Off");
       $on = $this->ReadPropertyString("On");
-      $FullTopic =
 
       // Buffer decodieren und in eine Variable schreiben
       $Buffer = utf8_decode($data->Buffer);
