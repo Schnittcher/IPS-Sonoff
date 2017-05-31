@@ -60,7 +60,7 @@ class IPS_SonoffSwitch extends IPSModule {
   $index = count($SetCommandArr);
 
   $SetCommandArr[$PrefixIndex] = "cmnd";
-  $SetCommandArr[$TopicIndex] = "sonoff52";
+  $SetCommandArr[$TopicIndex] = "$this->ReadPropertyString("Topic")";
   $SetCommandArr[$index] = "power";
 
   $topic = implode("/",$SetCommandArr);
