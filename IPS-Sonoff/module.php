@@ -1,5 +1,6 @@
 <?
 class IPS_Sonoff extends IPSModule {
+  private $keytest;
 
   public function Create() {
       //Never delete this line!
@@ -24,6 +25,44 @@ class IPS_Sonoff extends IPSModule {
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
     }
+
+    private function traverseArray($array)
+    {
+    	// Loops through each element. If element again is array, function is recalled. If not, result is echoed.
+      foreach($array as $key=>$value)
+    	{
+    		if(is_array($value))
+    		{
+          $this->keytest = key($value);
+          $this->traverseArray($value);
+          $this->keytest = key($value);
+    		}else{
+          $this->SendDebug("Rekursion $this->keytest", "$key beinhaltet $value",0);
+          //echo $key." = ".$value."<br />\n";
+    		}
+    	}
+    }
+
+
+
+/*
+    private function test_print($item, $key) {
+
+      if (is_int($item)) {
+        switch ($key) {
+          case 'Temperature':
+
+            $variablenID = $this->RegisterVariableFloat("SonoffDS1", "DS1","~Temperature");
+            break;
+          case 'Humidity'
+            $variablenID = $this->RegisterVariableFloat("SonoffDHT11_H", "DHT11_Feuchte","~Humidity.F");
+            break;
+        }
+
+      }
+      $this->SendDebug("Rekursion", "$key beinhaltet $item",0);
+    }
+    */
 
     public function ReceiveData($JSONString) {
       $this->SendDebug("JSON", $JSONString,0);
@@ -53,9 +92,19 @@ class IPS_Sonoff extends IPSModule {
     if (fnmatch("*SENSOR", $Buffer->TOPIC)) {
       $this->SendDebug("Sensor", $Buffer->MSG,0);
       $myBuffer = json_decode($Buffer->MSG,true);
-      foreach ($myBuffer as $value) {
-        $this->SendDebug("Array", $value,0);
+    $this->traverseArray($myBuffer);
+      //array_walk_recursive($myBuffer, array($this, 'test_print',$keys);
+/*       foreach ($myBuffer as $value) {
+        if (is_array($value)) {
+          foreach ($myBuffer as $value2) {
+            $this->SendDebug("Array2", $value2,0);
+          }
+        }
+        else {
+          $this->SendDebug("Array", $value,0);
+        }
       }
+*/
     }
       $this->SendDebug("Buffer", $Buffer->TOPIC,0);
     }
