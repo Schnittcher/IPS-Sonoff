@@ -5,6 +5,15 @@
       { "type": "Label", "label": "Parameter Einstellungen" },
       { "type": "ValidationTextBox", "name": "On", "caption": "Power On" },
       { "type": "ValidationTextBox", "name": "Off", "caption": "Power Off" },
-      { "type": "ValidationTextBox", "name": "FullTopic", "caption": "Full Topic" }
+      { "type": "ValidationTextBox", "name": "FullTopic", "caption": "Full Topic" },
+	  
+	  { "type": "Label", "label": "Debug Modus" },
+	  { "type": "CheckBox", "name": "State", "caption": "State" },
+	  { "type": "CheckBox", "name": "Sensoren", "caption": "Sensoren" },
+	  { "type": "CheckBox", "name": "Pow", "caption": "Pow" }
+    ],
+    "actions":
+    [
+	  { "type": "Button", "label": "Restart Sonoff", "onClick": "Sonoff_restart($id);" }
     ]
 }

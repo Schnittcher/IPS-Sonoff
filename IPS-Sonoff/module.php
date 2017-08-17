@@ -1,7 +1,6 @@
 <?
 class IPS_Sonoff extends IPSModule {
-  private $keytest;
-
+  
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -12,9 +11,13 @@ class IPS_Sonoff extends IPSModule {
       $this->RegisterPropertyString("Off","0");
       $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
 
-      $variablenID = $this->RegisterVariableBoolean("SonoffStatus", "Status","~Switch");
       $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
-      $this->EnableAction("SonoffStatus");
+	  
+	  //Debug Optionen
+	  $this->RegisterPropertyBoolean("Sensoren", false);
+	  $this->RegisterPropertyBoolean("State", false);
+	  $this->RegisterPropertyBoolean("Pow", false);
+      //$this->EnableAction("SonoffStatus");
 
   }
   public function ApplyChanges() {
@@ -25,92 +28,138 @@ class IPS_Sonoff extends IPSModule {
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
     }
+	
+	private function find_parent($array, $needle, $parent = null) {
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            $pass = $parent;
+            if (is_string($key)) {
+                $pass = $key;
+            }
+            $found = $this->find_parent($value, $needle, $pass);
+            if ($found !== false) {
+                return $found;
+            }
+        } else if ($value === $needle) {
+            return $parent;
+        }
+    }
 
-    private function traverseArray($array)
+    return false;
+}
+
+    private function traverseArray($array, $GesamtArray)
     {
-    	// Loops through each element. If element again is array, function is recalled. If not, result is echoed.
       foreach($array as $key=>$value)
     	{
-    		if(is_array($value))
-    		{
-          $this->keytest = key($value);
-          $this->traverseArray($value);
-          $this->keytest = key($value);
+    		if(is_array($value)) {
+				$this->traverseArray($value, $GesamtArray);
     		}else{
-          $this->SendDebug("Rekursion $this->keytest", "$key beinhaltet $value",0);
-          //echo $key." = ".$value."<br />\n";
-    		}
-    	}
-    }
-
-
-
-/*
-    private function test_print($item, $key) {
-
-      if (is_int($item)) {
-        switch ($key) {
-          case 'Temperature':
-
-            $variablenID = $this->RegisterVariableFloat("SonoffDS1", "DS1","~Temperature");
-            break;
-          case 'Humidity'
-            $variablenID = $this->RegisterVariableFloat("SonoffDHT11_H", "DHT11_Feuchte","~Humidity.F");
-            break;
-        }
-
-      }
-      $this->SendDebug("Rekursion", "$key beinhaltet $item",0);
-    }
-    */
+				$ParentKey = $this->find_parent($GesamtArray,$value);
+				$this->Debug("Rekursion Sonoff ".$ParentKey."_".$key,"$key = $value","Sensoren");
+				//$this->SendDebug("Rekursion Sonoff ".$ParentKey."_".$key, "$key beinhaltet $value",0);
+				if (is_int($value) or is_float($value)){
+				  switch ($key) {
+					  case 'Temperature':
+						$variablenID = $this->RegisterVariableFloat("Sonoff_".$ParentKey."_".$key, $ParentKey." Temperatur","~Temperature");
+						SetValue($this->GetIDForIdent("Sonoff_".$ParentKey."_".$key), $value);
+						break;
+					  case 'Humidity':
+						$variablenID = $this->RegisterVariableFloat("Sonoff_".$ParentKey."_".$key, $ParentKey." Feuchte","~Humidity.F");
+						SetValue($this->GetIDForIdent("Sonoff_".$ParentKey."_".$key), $value);
+						break;
+					}
+          
+				}
+			}
+		}
+	}
 
     public function ReceiveData($JSONString) {
-      $this->SendDebug("JSON", $JSONString,0);
-      $data = json_decode($JSONString);
-      $off = $this->ReadPropertyString("Off");
-      $on = $this->ReadPropertyString("On");
+		if (!empty($this->ReadPropertyString("Topic"))) {
+			  $this->SendDebug("ReceiveData JSON", $JSONString,0);
+			  $data = json_decode($JSONString);
+			  $off = $this->ReadPropertyString("Off");
+			  $on = $this->ReadPropertyString("On");
 
-      // Buffer decodieren und in eine Variable schreiben
-      $Buffer = utf8_decode($data->Buffer);
-      // Und Diese dann wieder dekodieren
-      IPS_LogMessage("SonoffSwitch",$data->Buffer);
-	  $Buffer = json_decode($data->Buffer);
+			  // Buffer decodieren und in eine Variable schreiben
+			  $Buffer = utf8_decode($data->Buffer);
+			  // Und Diese dann wieder dekodieren
+			  IPS_LogMessage("SonoffSwitch",$data->Buffer);
+			  $Buffer = json_decode($data->Buffer);
 
-    //Power Vairablen checken
-    if (fnmatch("*POWER", $Buffer->TOPIC)) {
-		  $this->SendDebug("Power", $Buffer->MSG,0);
-      switch ($Buffer->MSG) {
-        case $off:
-          SetValue($this->GetIDForIdent("SonoffStatus"), 0);
-          break;
-        case $on:
-          SetValue($this->GetIDForIdent("SonoffStatus"), 1);
-          break;
-      }
-	  }
-    //Sensor Variablen checken
-    if (fnmatch("*SENSOR", $Buffer->TOPIC)) {
-      $this->SendDebug("Sensor", $Buffer->MSG,0);
-      $myBuffer = json_decode($Buffer->MSG,true);
-    $this->traverseArray($myBuffer);
-      //array_walk_recursive($myBuffer, array($this, 'test_print',$keys);
-/*       foreach ($myBuffer as $value) {
-        if (is_array($value)) {
-          foreach ($myBuffer as $value2) {
-            $this->SendDebug("Array2", $value2,0);
-          }
-        }
-        else {
-          $this->SendDebug("Array", $value,0);
-        }
-      }
-*/
-    }
-      $this->SendDebug("Buffer", $Buffer->TOPIC,0);
-    }
+			//Power Vairablen checken
+			if (fnmatch("*POWER*", $Buffer->TOPIC)) {
+				$this->SendDebug("Power Topic",$Buffer->TOPIC,0);
+				$this->SendDebug("Power", $Buffer->MSG,0);
+				
+				$power = explode("/", $Buffer->TOPIC);
+				end($power);
+				$lastKey = key($power);
+				//$this->SendDebug("Power", "Sonoff_".$power[$lastKey],0);
+				if ($power[$lastKey] <> "POWER1") {
+					$this->RegisterVariableBoolean("Sonoff_".$power[$lastKey], $power[$lastKey],"~Switch");
+					$this->EnableAction("Sonoff_".$power[$lastKey]);
+				  switch ($Buffer->MSG) {
+					case $off:
+					  SetValue($this->GetIDForIdent("Sonoff_".$power[$lastKey]), 0);
+					  break;
+					case $on:
+					  SetValue($this->GetIDForIdent("Sonoff_".$power[$lastKey]), 1);
+					  break;
+				  }
+				}
+			}
+			//State checken
+			if (fnmatch("*STATE", $Buffer->TOPIC)) {
+				$myBuffer = json_decode($Buffer->MSG);
+				$this->Debug("State MSG", $Buffer->MSG,"State");
+				$this->Debug("State RSSI", $myBuffer->Wifi->RSSI,"State");
+				SetValue($this->GetIDForIdent("SonoffRSSI"), $myBuffer->Wifi->RSSI);
+			}
+			//Sensor Variablen checken
+			if (fnmatch("*SENSOR", $Buffer->TOPIC)) {
+			  $this->Debug("Sensor MSG", $Buffer->MSG,"Sensoren");
+			  $myBuffer = json_decode($Buffer->MSG,true);
+			  $this->traverseArray($myBuffer, $myBuffer);
+			}
+			  $this->Debug("Sensor Topic", $Buffer->TOPIC,"Sensoren");
 
-  public function setStatus($Value) {
-  SetValue($this->GetIDForIdent("SonoffStatus"), $Value);
+			//POW Variablen
+			//{"DataID":"{018EF6B5-AB94-40C6-AA53-46943E824ACF}","Buffer":"{\"TOPIC\":\"tele\\/sonoff50\\/ENERGY\",\"MSG\":\"{\\\"Time\\\":\\\"2017-08-17T15:41:00\\\", \\\"Total\\\":74.969, \\\"Yesterday\\\":1.895, \\\"Today\\\":1.529, \\\"Period\\\":0, \\\"Power\\\":325, \\\"Factor\\\":1.00, \\\"Voltage\\\":228, \\\"Current\\\":1.418}\",\"SENDER\":\"MQTT_GET_PAYLOAD\"}"}
+			if (fnmatch("*ENERGY", $Buffer->TOPIC)) {
+				$myBuffer = json_decode($Buffer->MSG);
+				$this->Debug("ENERGY MSG", $Buffer->MSG,"Pow");
+				$this->RegisterVariableFloat("Sonoff_POWTotal", "Total", "~Electricity");
+				$this->RegisterVariableFloat("Sonoff_POWYesterday", "Yesterday", "~Electricity");
+				$this->RegisterVariableFloat("Sonoff_POWToday", "Today", "~Electricity");
+				$this->RegisterVariableFloat("Sonoff_POWPower", "Power", "~Watt.3680");
+				$this->RegisterVariableFloat("Sonoff_POWFactor", "Factor");
+				$this->RegisterVariableFloat("Sonoff_POWVoltage", "Voltage", "~Volt");
+				$this->RegisterVariableFloat("Sonoff_POWCurrent", "Current", "~Ampere");
+
+				SetValue($this->GetIDForIdent("Sonoff_POWPower"), $myBuffer->Power);
+				SetValue($this->GetIDForIdent("Sonoff_POWTotal"), $myBuffer->Total);
+				SetValue($this->GetIDForIdent("Sonoff_POWToday"), $myBuffer->Today);
+				SetValue($this->GetIDForIdent("Sonoff_POWYesterday"), $myBuffer->Yesterday);
+				SetValue($this->GetIDForIdent("Sonoff_POWCurrent"), $myBuffer->Current);
+				SetValue($this->GetIDForIdent("Sonoff_POWVoltage"), $myBuffer->Voltage);
+				SetValue($this->GetIDForIdent("Sonoff_POWFactor"), $myBuffer->Factor);		
+			}
+		  }
+  }
+	private function Debug($Meldungsname, $Daten, $Category) {
+		if ($this->ReadPropertyBoolean($Category) == true) {
+			$this->SendDebug($Meldungsname, $Daten,0);
+		}
+	}
+
+  public function setPower($Ident,$Value) {
+	$power = explode("_", $Ident);
+	end($power);
+	$powerTopic = $power[key($power)];
+
+  SetValue($this->GetIDForIdent($Ident), $Value);
 
   $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
   $PrefixIndex = array_search("%prefix%",$FullTopic);
@@ -121,7 +170,7 @@ class IPS_Sonoff extends IPSModule {
 
   $SetCommandArr[$PrefixIndex] = "cmnd";
   $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
-  $SetCommandArr[$index] = "power";
+  $SetCommandArr[$index] = $powerTopic;
 
   $topic = implode("/",$SetCommandArr);
 	$msg = $Value;
@@ -138,13 +187,38 @@ class IPS_Sonoff extends IPSModule {
 }
 
     public function RequestAction($Ident, $Value) {
-      switch ($Ident) {
-        case "SonoffStatus":
-          $result = $this->setStatus($Value);
-          break;
-        default:
-          throw new Exception("Invalid ident");
-      }
+      //switch ($Ident) {
+        //case "SonoffStatus":
+		$this->SendDebug("RequestAction Ident", $Ident,0);
+		$this->SendDebug("RequestAction Value", $Value,0);
+          $result = $this->setPower($Ident, $Value);
+          //break;
+        //default:
+          //throw new Exception("Invalid ident");
+      //}
     }
+	
+	public function restart() {
+		$FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
+		$PrefixIndex = array_search("%prefix%",$FullTopic);
+		$TopicIndex = array_search("%topic%",$FullTopic);
+
+		$SetCommandArr = $FullTopic;
+		$index = count($SetCommandArr);
+
+		
+		$SetCommandArr[$PrefixIndex] = "cmnd";
+		$SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
+		$SetCommandArr[$index] = "restart";
+		
+		$topic = implode("/",$SetCommandArr);
+		
+		
+		$Buffer["Topic"] = $topic;
+		$Buffer["MSG"] = 1;
+		
+		$BufferJSON = json_encode($Buffer);
+		$this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+	}
 }
 ?>
