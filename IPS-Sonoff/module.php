@@ -1,6 +1,6 @@
 <?
 class IPS_Sonoff extends IPSModule {
-  
+
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -12,7 +12,7 @@ class IPS_Sonoff extends IPSModule {
       $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
 
       $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
-	  
+
 	  //Debug Optionen
 	  $this->RegisterPropertyBoolean("Sensoren", false);
 	  $this->RegisterPropertyBoolean("State", false);
@@ -28,7 +28,7 @@ class IPS_Sonoff extends IPSModule {
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
     }
-	
+
 	private function find_parent($array, $needle, $parent = null) {
     foreach ($array as $key => $value) {
         if (is_array($value)) {
@@ -68,8 +68,11 @@ class IPS_Sonoff extends IPSModule {
 						$variablenID = $this->RegisterVariableFloat("Sonoff_".$ParentKey."_".$key, $ParentKey." Feuchte","~Humidity.F");
 						SetValue($this->GetIDForIdent("Sonoff_".$ParentKey."_".$key), $value);
 						break;
+            default:
+     				$variablenID = $this->RegisterVariableFloat("Sonoff_".$ParentKey."_".$key, $ParentKey." ".$key);
+     				SetValue($this->GetIDForIdent("Sonoff_".$ParentKey."_".$key), $value);
 					}
-          
+
 				}
 			}
 		}
@@ -92,7 +95,7 @@ class IPS_Sonoff extends IPSModule {
 			if (fnmatch("*POWER*", $Buffer->TOPIC)) {
 				$this->SendDebug("Power Topic",$Buffer->TOPIC,0);
 				$this->SendDebug("Power", $Buffer->MSG,0);
-				
+
 				$power = explode("/", $Buffer->TOPIC);
 				end($power);
 				$lastKey = key($power);
@@ -144,7 +147,7 @@ class IPS_Sonoff extends IPSModule {
 				SetValue($this->GetIDForIdent("Sonoff_POWYesterday"), $myBuffer->Yesterday);
 				SetValue($this->GetIDForIdent("Sonoff_POWCurrent"), $myBuffer->Current);
 				SetValue($this->GetIDForIdent("Sonoff_POWVoltage"), $myBuffer->Voltage);
-				SetValue($this->GetIDForIdent("Sonoff_POWFactor"), $myBuffer->Factor);		
+				SetValue($this->GetIDForIdent("Sonoff_POWFactor"), $myBuffer->Factor);
 			}
 		  }
   }
@@ -197,7 +200,7 @@ class IPS_Sonoff extends IPSModule {
           //throw new Exception("Invalid ident");
       //}
     }
-	
+
 	public function restart() {
 		$FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
 		$PrefixIndex = array_search("%prefix%",$FullTopic);
@@ -206,17 +209,17 @@ class IPS_Sonoff extends IPSModule {
 		$SetCommandArr = $FullTopic;
 		$index = count($SetCommandArr);
 
-		
+
 		$SetCommandArr[$PrefixIndex] = "cmnd";
 		$SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
 		$SetCommandArr[$index] = "restart";
-		
+
 		$topic = implode("/",$SetCommandArr);
-		
-		
+
+
 		$Buffer["Topic"] = $topic;
 		$Buffer["MSG"] = 1;
-		
+
 		$BufferJSON = json_encode($Buffer);
 		$this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
 	}
