@@ -157,7 +157,7 @@ class IPS_Sonoff extends IPSModule {
 		}
 	}
 
-  public function setPower($Ident,$Value) {
+  public function setPower(string $Ident,string $Value) {
 	$power = explode("_", $Ident);
 	end($power);
 	$powerTopic = $power[key($power)];
