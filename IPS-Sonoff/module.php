@@ -157,12 +157,14 @@ class IPS_Sonoff extends IPSModule {
 		}
 	}
 
-  public function setPower(string $Ident,string $Value) {
-	$power = explode("_", $Ident);
+  public function setPower(int $variableID ,string $Value) {
+	$ident = IPS_GetObject($variableID)["ObjectIdent"];
+
+	$power = explode("_", $ident);
 	end($power);
 	$powerTopic = $power[key($power)];
 
-  SetValue($this->GetIDForIdent($Ident), $Value);
+  SetValue($variableID, $Value);
 
   $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
   $PrefixIndex = array_search("%prefix%",$FullTopic);
@@ -186,7 +188,7 @@ class IPS_Sonoff extends IPSModule {
 	$BufferJSON = json_encode($Buffer);
 	//MQTT_Publish(33877 /*[MQTT Client]*/, $topic,$msg,0,0);
 	$this->SendDebug("setStatus", $BufferJSON,0);
-  $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+	$this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
 }
 
     public function RequestAction($Ident, $Value) {
