@@ -157,14 +157,12 @@ class IPS_Sonoff extends IPSModule {
 		}
 	}
 
-  public function setPower(int $variableID ,string $Value) {
-	$ident = IPS_GetObject($variableID)["ObjectIdent"];
-
-	$power = explode("_", $ident);
+  public function setPower(string $Ident,string $Value) {
+	$power = explode("_", $Ident);
 	end($power);
 	$powerTopic = $power[key($power)];
 
-  SetValue($variableID, $Value);
+  SetValue($this->GetIDForIdent($Ident), $Value);
 
   $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
   $PrefixIndex = array_search("%prefix%",$FullTopic);
@@ -188,7 +186,7 @@ class IPS_Sonoff extends IPSModule {
 	$BufferJSON = json_encode($Buffer);
 	//MQTT_Publish(33877 /*[MQTT Client]*/, $topic,$msg,0,0);
 	$this->SendDebug("setStatus", $BufferJSON,0);
-	$this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
 }
 
     public function RequestAction($Ident, $Value) {
@@ -196,7 +194,8 @@ class IPS_Sonoff extends IPSModule {
         //case "SonoffStatus":
 		$this->SendDebug("RequestAction Ident", $Ident,0);
 		$this->SendDebug("RequestAction Value", $Value,0);
-          $result = $this->setPower($Ident, $Value);
+    $variablenID = IPS_GetObjectIDByIdent($Ident,$InstanceID);
+    $result = $this->setPower($variablenID, $Value);
           //break;
         //default:
           //throw new Exception("Invalid ident");
