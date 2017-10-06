@@ -8,7 +8,7 @@
       { "type": "ValidationTextBox", "name": "FullTopic", "caption": "Full Topic" },
 
     { "type": "Label", "label": "Settings" },
-    { "type": "CheckBox", "name": "Power", "caption": "Power1 deaktivieren" }
+    { "type": "CheckBox", "name": "Power1Deactivate", "caption": "Power1 deaktivieren" },
 
 	  { "type": "Label", "label": "Debug Modus" },
 	  { "type": "CheckBox", "name": "State", "caption": "State" },
