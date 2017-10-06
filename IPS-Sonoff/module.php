@@ -13,6 +13,9 @@ class IPS_Sonoff extends IPSModule {
 
       $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
 
+      //Settings
+      $this->RegisterPropertyBoolean("Power1Deactivate", false);
+
 	  //Debug Optionen
 	  $this->RegisterPropertyBoolean("Sensoren", false);
 	  $this->RegisterPropertyBoolean("State", false);
@@ -100,7 +103,11 @@ class IPS_Sonoff extends IPSModule {
 				end($power);
 				$lastKey = key($power);
 				//$this->SendDebug("Power", "Sonoff_".$power[$lastKey],0);
-				if ($power[$lastKey] <> "POWER1") {
+        $tmpPower = "POWER1";
+        if ($this->ReadPropertyBoolean($Power1Deactivate) == true) {
+          $tmpPower = "POWER"
+        }
+				if ($power[$lastKey] <> $tmpPower) {
 					$this->RegisterVariableBoolean("Sonoff_".$power[$lastKey], $power[$lastKey],"~Switch");
 					$this->EnableAction("Sonoff_".$power[$lastKey]);
 				  switch ($Buffer->MSG) {

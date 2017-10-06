@@ -6,7 +6,10 @@
       { "type": "ValidationTextBox", "name": "On", "caption": "Power On" },
       { "type": "ValidationTextBox", "name": "Off", "caption": "Power Off" },
       { "type": "ValidationTextBox", "name": "FullTopic", "caption": "Full Topic" },
-	  
+
+    { "type": "Label", "label": "Settings" },
+    { "type": "CheckBox", "name": "Power", "caption": "Power1 deaktivieren" }
+
 	  { "type": "Label", "label": "Debug Modus" },
 	  { "type": "CheckBox", "name": "State", "caption": "State" },
 	  { "type": "CheckBox", "name": "Sensoren", "caption": "Sensoren" },
