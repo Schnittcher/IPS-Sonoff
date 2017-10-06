@@ -104,7 +104,7 @@ class IPS_Sonoff extends IPSModule {
 				$lastKey = key($power);
 				//$this->SendDebug("Power", "Sonoff_".$power[$lastKey],0);
         $tmpPower = "POWER1";
-        if ($this->ReadPropertyBoolean($Power1Deactivate) == true) {
+        if ($this->ReadPropertyBoolean("Power1Deactivate") == true) {
           $tmpPower = "POWER";
         }
 				if ($power[$lastKey] <> $tmpPower) {
