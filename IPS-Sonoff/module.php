@@ -202,7 +202,7 @@ class IPS_Sonoff extends IPSModule {
 		$this->SendDebug("RequestAction Ident", $Ident,0);
 		$this->SendDebug("RequestAction Value", $Value,0);
     $variablenID = IPS_GetObjectIDByIdent($Ident,$this->InstanceID);
-    $result = $this->setPower($variablenID, $Value);
+    $result = $this->setPower($Ident, $Value);
           //break;
         //default:
           //throw new Exception("Invalid ident");
