@@ -201,7 +201,7 @@ class IPS_Sonoff extends IPSModule {
         //case "SonoffStatus":
 		$this->SendDebug("RequestAction Ident", $Ident,0);
 		$this->SendDebug("RequestAction Value", $Value,0);
-    $variablenID = IPS_GetObjectIDByIdent($Ident,$InstanceID);
+    $variablenID = IPS_GetObjectIDByIdent($Ident,$this->InstanceID);
     $result = $this->setPower($variablenID, $Value);
           //break;
         //default:
