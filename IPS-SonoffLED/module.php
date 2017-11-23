@@ -32,10 +32,10 @@ class IPS_SonoffLED extends IPSModule {
 
     $SetCommandArr[$PrefixIndex] = "cmnd";
     $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
-    $SetCommandArr[$index] = $LED." ".$color;
+    $SetCommandArr[$index] = $LED;
 
     $topic = implode("/",$SetCommandArr);
-  	$msg = $Value;
+  	$msg = $color;
 
   	if($msg===false){$msg = 'false';}
   	elseif($msg===true){$msg = 'true';}
