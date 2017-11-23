@@ -91,7 +91,7 @@ class IPS_Sonoff extends IPSModule {
 			  // Buffer decodieren und in eine Variable schreiben
 			  $Buffer = utf8_decode($data->Buffer);
 			  // Und Diese dann wieder dekodieren
-			  IPS_LogMessage("SonoffSwitch",$data->Buffer);
+			  //IPS_LogMessage("SonoffSwitch",$data->Buffer);
 			  $Buffer = json_decode($data->Buffer);
 
 			//Power Vairablen checken
