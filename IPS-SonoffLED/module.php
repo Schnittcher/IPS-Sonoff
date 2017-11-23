@@ -21,7 +21,7 @@ class IPS_SonoffLED extends IPSModule {
       $this->SetReceiveDataFilter(".*".$topic.".*");
     }
 
-    public function setLED(integer $LED,string $color) {
+    public function setLED(integer $InstanceID, integer $LED,string $color) {
 
     $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
     $PrefixIndex = array_search("%prefix%",$FullTopic);
