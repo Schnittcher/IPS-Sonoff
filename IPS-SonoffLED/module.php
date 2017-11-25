@@ -187,7 +187,7 @@ class IPS_SonoffLED extends IPSModule {
                                         Array(9, "Hanukkah", "", -1),
                                         Array(10, "Kwanzaa", "", -1),
                                         Array(11, "Rainbow", "", -1),
-                                        Array(12, "Fire", "", -1)
+                                        Array(12, "Fire", "", -1));
 
 
   }
