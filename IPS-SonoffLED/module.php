@@ -44,11 +44,21 @@ class IPS_SonoffLED extends IPSModule {
          SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $MSG->Pixels);
        }
        if (fnmatch("*Speed*", $Buffer->MSG)) {
-        $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
-        $this->SendDebug("Speed MSG", $Buffer->MSG,0);
-        $MSG = json_decode($Buffer->MSG);
-        SetValue($this->GetIDForIdent("SonoffLED_Speed"), $MSG->Speed);
-      }
+          $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
+          $this->SendDebug("Speed MSG", $Buffer->MSG,0);
+          $MSG = json_decode($Buffer->MSG);
+          SetValue($this->GetIDForIdent("SonoffLED_Speed"), $MSG->Speed);
+        }
+      if (fnmatch("*Fade*", $Buffer->MSG)) {
+         $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
+         $this->SendDebug("Speed MSG", $Buffer->MSG,0);
+         $MSG = json_decode($Buffer->MSG);
+         if ($MSG->Fade == "ON") {
+            SetValue($this->GetIDForIdent("SonoffLED_Speed"), true);
+         } else {
+            SetValue($this->GetIDForIdent("SonoffLED_Speed"), false);
+         }
+     }
        if (fnmatch("*STATE", $Buffer->TOPIC)) {
  				$myBuffer = json_decode($Buffer->MSG);
  				SetValue($this->GetIDForIdent("SonoffRSSI"), $myBuffer->Wifi->RSSI);
