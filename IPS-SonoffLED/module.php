@@ -9,7 +9,7 @@ class IPS_SonoffLED extends IPSModule {
       $this->RegisterPropertyString("Topic","");
       $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
       $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
-
+      $this->RegisterVariableInteger("SonoffLED_Pixels", "Pixels");
   }
 
   public function ApplyChanges() {
@@ -19,6 +19,22 @@ class IPS_SonoffLED extends IPSModule {
       //Setze Filter fÃ¼r ReceiveData
       $topic = $this->ReadPropertyString("Topic");
       $this->SetReceiveDataFilter(".*".$topic.".*");
+    }
+
+    public function ReceiveData($JSONString) {
+      if (!empty($this->ReadPropertyString("Topic"))) {
+        $this->SendDebug("ReceiveData JSON", $JSONString,0);
+        $data = json_decode($JSONString);
+
+        // Buffer decodieren und in eine Variable schreiben
+			  $Buffer = utf8_decode($data->Buffer);
+        $Buffer = json_decode($data->Buffer);
+
+        if (fnmatch("*Pixel*", $Buffer->TOPIC)) {
+          $pixels = explode("/", $Buffer->TOPIC);
+          SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $pixels);
+        }
+      }
     }
 
     public function setLED($LED, $color) {
