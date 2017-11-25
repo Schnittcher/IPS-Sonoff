@@ -95,5 +95,29 @@ class IPS_SonoffLED extends IPSModule {
     $this->SendDebug("setDimmer", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
+
+  public function setColor($color) {
+    $command = "Color";
+    $msg = $color;
+    $BufferJSON = $this->MQTTCommand($command,$msg);
+    $this->SendDebug("setColor", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
+
+  public function setFade($value) {
+    $command = "Fade";
+    $msg = $value;
+    $BufferJSON = $this->MQTTCommand($command,$msg);
+    $this->SendDebug("setFade", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
+
+  public function setSpeed($value) {
+    $command = "Speed";
+    $msg = $value;
+    $BufferJSON = $this->MQTTCommand($command,$msg);
+    $this->SendDebug("setSpeed", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
 }
 ?>
