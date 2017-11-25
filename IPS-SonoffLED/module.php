@@ -10,6 +10,13 @@ class IPS_SonoffLED extends IPSModule {
       $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
       $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
       $this->RegisterVariableInteger("SonoffLED_Pixels", "Pixels");
+
+      $this->createVariabenProfiles();
+
+      $this->RegisterVariableInteger("SonoffLED_Fade", "Fade");
+      $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","Speed");
+
+
   }
 
   public function ApplyChanges() {
@@ -118,6 +125,27 @@ class IPS_SonoffLED extends IPSModule {
     $BufferJSON = $this->MQTTCommand($command,$msg);
     $this->SendDebug("setSpeed", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
+
+  private function createVariabenProfiles() {
+    $this->RegisterProfileInteger("Speed,Speedo","WS2812","",1,20,1);
+  }
+
+
+  protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize) {
+
+    if(!IPS_VariableProfileExists($Name)) {
+        IPS_CreateVariableProfile($Name, 1);
+    } else {
+        $profile = IPS_GetVariableProfile($Name);
+        if($profile['ProfileType'] != 1)
+        throw new Exception("Variable profile type does not match for profile ".$Name);
+    }
+
+    IPS_SetVariableProfileIcon($Name, $Icon);
+    IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
+    IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
+
   }
 }
 ?>
