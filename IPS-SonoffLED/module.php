@@ -87,5 +87,13 @@ class IPS_SonoffLED extends IPSModule {
     $this->SendDebug("setPixel", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
+
+  public function setDimmer($value) {
+    $command = "Dimmer";
+    $msg = $value;
+    $BufferJSON = $this->MQTTCommand($command,$msg);
+    $this->SendDebug("setDimmer", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
 }
 ?>
