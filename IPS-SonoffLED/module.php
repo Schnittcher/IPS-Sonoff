@@ -27,17 +27,19 @@ class IPS_SonoffLED extends IPSModule {
         $data = json_decode($JSONString);
 
         // Buffer decodieren und in eine Variable schreiben
-			  $Buffer = utf8_decode($data->Buffer);
+        $Buffer = utf8_decode($data->Buffer);
         $Buffer = json_decode($data->Buffer);
 
         if (fnmatch("*Pixels*", $Buffer->MSG)) {
-          $pixels = explode("/", $Buffer->MSG);
-          SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $pixels);
-        }
-      }
-    }
+  		   $this->SendDebug("Pixels Topic", $Buffer->TOPIC,0);
+  		   $this->SendDebug("Pixels MSG", $Buffer->MSG,0);
+         $MSG = json_decode($Buffer->MSG);
+         SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $MSG->Pixels);
+       }
+     }
+   }
 
-    public function setLED($LED, $color) {
+   public function setLED($LED, $color) {
 
     $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
     $PrefixIndex = array_search("%prefix%",$FullTopic);
@@ -61,31 +63,30 @@ class IPS_SonoffLED extends IPSModule {
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
 
-    public function setScheme($schemeID) {
-      $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
-      $PrefixIndex = array_search("%prefix%",$FullTopic);
-      $TopicIndex = array_search("%topic%",$FullTopic);
+  public function setScheme($schemeID) {
+    $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
+    $PrefixIndex = array_search("%prefix%",$FullTopic);
+    $TopicIndex = array_search("%topic%",$FullTopic);
 
-      $SetCommandArr = $FullTopic;
-      $index = count($SetCommandArr);
+    $SetCommandArr = $FullTopic;
+    $index = count($SetCommandArr);
 
-      $SetCommandArr[$PrefixIndex] = "cmnd";
-      $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
-      $SetCommandArr[$index] = "Scheme";
+    $SetCommandArr[$PrefixIndex] = "cmnd";
+    $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
+    $SetCommandArr[$index] = "Scheme";
 
-      $topic = implode("/",$SetCommandArr);
-      $msg = $schemeID;
+    $topic = implode("/",$SetCommandArr);
+    $msg = $schemeID;
 
-      $Buffer["Topic"] = $topic;
-      $Buffer["MSG"] = $msg;
-      $BufferJSON = json_encode($Buffer);
+    $Buffer["Topic"] = $topic;
+    $Buffer["MSG"] = $msg;
+    $BufferJSON = json_encode($Buffer);
 
-      $this->SendDebug("setScheme", $BufferJSON,0);
-      $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+    $this->SendDebug("setScheme", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
 
-    }
-
-    public function setPixel($count) {
+  public function setPixel($count) {
 
     $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
     $PrefixIndex = array_search("%prefix%",$FullTopic);
@@ -107,10 +108,6 @@ class IPS_SonoffLED extends IPSModule {
 
     $this->SendDebug("setPixel", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
-    }
-
-
-
+  }
 }
-
 ?>
