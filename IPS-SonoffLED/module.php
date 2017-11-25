@@ -30,7 +30,7 @@ class IPS_SonoffLED extends IPSModule {
 			  $Buffer = utf8_decode($data->Buffer);
         $Buffer = json_decode($data->Buffer);
 
-        if (fnmatch("*Pixel*", $Buffer->TOPIC)) {
+        if (fnmatch("*Pixels*", $Buffer->TOPIC)) {
           $pixels = explode("/", $Buffer->TOPIC);
           SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $pixels);
         }
