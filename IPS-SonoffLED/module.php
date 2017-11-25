@@ -14,9 +14,11 @@ class IPS_SonoffLED extends IPSModule {
       $this->createVariabenProfiles();
 
       $this->RegisterVariableBoolean("SonoffLED_Fade", "Fade","Switch");
-      $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED-Speed");
+      $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
+      $this->RegisterVariableInteger("SonoffLED_Scheme", "Speed","SonoffLED.Scheme");
       $this->EnableAction("SonoffLED_Speed");
       $this->EnableAction("SonoffLED_Fade");
+      $this->EnableAction("SonoffLED_Scheme");
   }
 
   public function ApplyChanges() {
@@ -49,6 +51,12 @@ class IPS_SonoffLED extends IPSModule {
           $MSG = json_decode($Buffer->MSG);
           SetValue($this->GetIDForIdent("SonoffLED_Speed"), $MSG->Speed);
         }
+      if (fnmatch("*Scheme*", $Buffer->MSG)) {
+         $this->SendDebug("Scheme Topic", $Buffer->TOPIC,0);
+         $this->SendDebug("Scheme MSG", $Buffer->MSG,0);
+         $MSG = json_decode($Buffer->MSG);
+         SetValue($this->GetIDForIdent("SonoffLED_Scheme"), $MSG->Scheme);
+       }
       if (fnmatch("*Fade*", $Buffer->MSG)) {
          $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
          $this->SendDebug("Speed MSG", $Buffer->MSG,0);
@@ -151,6 +159,9 @@ class IPS_SonoffLED extends IPSModule {
       case 'SonoffLED_Fade':
         $this->setFade(intval($Value));
         break;
+      case 'SonoffLED_Scheme':
+        $this->setFade($Value);
+        break;
 
       default:
         # code...
@@ -159,7 +170,26 @@ class IPS_SonoffLED extends IPSModule {
   }
 
   private function createVariabenProfiles() {
-    $this->RegisterProfileInteger("SonoffLED-Speed","Speedo","","",1,20,1);
+    //Speed Profile
+    $this->RegisterProfileInteger("SonoffLED.Speed","Speedo","","",1,20,1);
+
+    //Scheme Profile
+    $this->RegisterProfileIntegerEx("SonoffLED.Scheme", "Shuffle", "", "", Array(
+                                        Array(0, "Default",  "", -1),
+                                        Array(1, "Wake up",  "", -1),
+                                        Array(2, "RGB Cycle", "", -1),
+                                        Array(3, "RBG Cycle", "", -1),
+                                        Array(4, "Random cycle", "", -1),
+                                        Array(5, "Clock", "", -1),
+                                        Array(6, "Incandescent pattern", "", -1),
+                                        Array(7, "RGB Pattern", "", -1),
+                                        Array(8, "Christmas", "", -1),
+                                        Array(9, "Hanukkah", "", -1),
+                                        Array(10, "Kwanzaa", "", -1),
+                                        Array(11, "Rainbow", "", -1),
+                                        Array(12, "Fire", "", -1)
+
+
   }
 
 
@@ -176,7 +206,22 @@ class IPS_SonoffLED extends IPSModule {
     IPS_SetVariableProfileIcon($Name, $Icon);
     IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
     IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
+  }
 
+  protected function RegisterProfileIntegerEx($Name, $Icon, $Prefix, $Suffix, $Associations) {
+      if ( sizeof($Associations) === 0 ){
+          $MinValue = 0;
+          $MaxValue = 0;
+      } else {
+          $MinValue = $Associations[0][0];
+          $MaxValue = $Associations[sizeof($Associations)-1][0];
+      }
+
+      $this->RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, 0);
+
+      foreach($Associations as $Association) {
+          IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
+      }
   }
 }
 ?>
