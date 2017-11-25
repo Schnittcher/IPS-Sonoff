@@ -56,7 +56,7 @@ class IPS_SonoffLED extends IPSModule {
      $SetCommandArr[$index] = $command;
 
      $topic = implode("/",$SetCommandArr);
-     $msg = $color;
+     $msg = $msg;
 
      $Buffer["Topic"] = $topic;
      $Buffer["MSG"] = $msg;
