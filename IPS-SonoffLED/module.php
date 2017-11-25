@@ -15,7 +15,7 @@ class IPS_SonoffLED extends IPSModule {
 
       $this->RegisterVariableBoolean("SonoffLED_Fade", "Fade","Switch");
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
-      $this->RegisterVariableInteger("SonoffLED_Scheme", "Speed","SonoffLED.Scheme");
+      $this->RegisterVariableInteger("SonoffLED_Scheme", "Scheme","SonoffLED.Scheme");
       $this->EnableAction("SonoffLED_Speed");
       $this->EnableAction("SonoffLED_Fade");
       $this->EnableAction("SonoffLED_Scheme");
@@ -160,7 +160,7 @@ class IPS_SonoffLED extends IPSModule {
         $this->setFade(intval($Value));
         break;
       case 'SonoffLED_Scheme':
-        $this->setFade($Value);
+        $this->setSheme($Value);
         break;
 
       default:
