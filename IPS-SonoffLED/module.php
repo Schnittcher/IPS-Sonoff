@@ -36,76 +36,54 @@ class IPS_SonoffLED extends IPSModule {
          $MSG = json_decode($Buffer->MSG);
          SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $MSG->Pixels);
        }
+       if (fnmatch("*STATE", $Buffer->TOPIC)) {
+ 				$myBuffer = json_decode($Buffer->MSG);
+ 				SetValue($this->GetIDForIdent("SonoffRSSI"), $myBuffer->Wifi->RSSI);
+ 			}
      }
    }
 
+   private function MQTTCommand($command, $msg) {
+     $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
+     $PrefixIndex = array_search("%prefix%",$FullTopic);
+     $TopicIndex = array_search("%topic%",$FullTopic);
+
+     $SetCommandArr = $FullTopic;
+     $index = count($SetCommandArr);
+
+     $SetCommandArr[$PrefixIndex] = "cmnd";
+     $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
+     $SetCommandArr[$index] = $command;
+
+     $topic = implode("/",$SetCommandArr);
+     $msg = $color;
+
+     $Buffer["Topic"] = $topic;
+     $Buffer["MSG"] = $msg;
+     $BufferJSON = json_encode($Buffer);
+
+     return $BufferJSON;
+   }
+
    public function setLED($LED, $color) {
-
-    $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
-    $PrefixIndex = array_search("%prefix%",$FullTopic);
-    $TopicIndex = array_search("%topic%",$FullTopic);
-
-    $SetCommandArr = $FullTopic;
-    $index = count($SetCommandArr);
-
-    $SetCommandArr[$PrefixIndex] = "cmnd";
-    $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
-    $SetCommandArr[$index] = "LED".$LED;
-
-    $topic = implode("/",$SetCommandArr);
-  	$msg = $color;
-
-  	$Buffer["Topic"] = $topic;
-  	$Buffer["MSG"] = $msg;
-  	$BufferJSON = json_encode($Buffer);
-  	//MQTT_Publish(33877 /*[MQTT Client]*/, $topic,$msg,0,0);
+    $command = "LED".$LED;
+    $msg = $color;
+  	$BufferJSON = $this->MQTTCommand($command,$color);
   	$this->SendDebug("setLED", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
 
   public function setScheme($schemeID) {
-    $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
-    $PrefixIndex = array_search("%prefix%",$FullTopic);
-    $TopicIndex = array_search("%topic%",$FullTopic);
-
-    $SetCommandArr = $FullTopic;
-    $index = count($SetCommandArr);
-
-    $SetCommandArr[$PrefixIndex] = "cmnd";
-    $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
-    $SetCommandArr[$index] = "Scheme";
-
-    $topic = implode("/",$SetCommandArr);
+    $command = "Scheme";
     $msg = $schemeID;
-
-    $Buffer["Topic"] = $topic;
-    $Buffer["MSG"] = $msg;
-    $BufferJSON = json_encode($Buffer);
-
+    $BufferJSON = $this->MQTTCommand($command,$msg);
     $this->SendDebug("setScheme", $BufferJSON,0);
-    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
-  }
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));  }
 
   public function setPixel($count) {
-
-    $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
-    $PrefixIndex = array_search("%prefix%",$FullTopic);
-    $TopicIndex = array_search("%topic%",$FullTopic);
-
-    $SetCommandArr = $FullTopic;
-    $index = count($SetCommandArr);
-
-    $SetCommandArr[$PrefixIndex] = "cmnd";
-    $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
-    $SetCommandArr[$index] = "Pixels";
-
-    $topic = implode("/",$SetCommandArr);
+    $command = "Pixels";
     $msg = $count;
-
-    $Buffer["Topic"] = $topic;
-    $Buffer["MSG"] = $msg;
-    $BufferJSON = json_encode($Buffer);
-
+    $BufferJSON = $this->MQTTCommand($command,$msg);
     $this->SendDebug("setPixel", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
