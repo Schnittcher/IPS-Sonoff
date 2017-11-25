@@ -45,7 +45,7 @@ class IPS_SonoffLED extends IPSModule {
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
 
-    public function setScheme(integer $schemeID) {
+    public function setScheme($schemeID) {
       $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
       $PrefixIndex = array_search("%prefix%",$FullTopic);
       $TopicIndex = array_search("%topic%",$FullTopic);
@@ -69,7 +69,7 @@ class IPS_SonoffLED extends IPSModule {
 
     }
 
-    public function setPixel(integr $count) {
+    public function setPixel($count) {
 
     $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
     $PrefixIndex = array_search("%prefix%",$FullTopic);
