@@ -37,16 +37,63 @@ class IPS_SonoffLED extends IPSModule {
     $topic = implode("/",$SetCommandArr);
   	$msg = $color;
 
-  	if($msg===false){$msg = 'false';}
-  	elseif($msg===true){$msg = 'true';}
-
   	$Buffer["Topic"] = $topic;
   	$Buffer["MSG"] = $msg;
   	$BufferJSON = json_encode($Buffer);
   	//MQTT_Publish(33877 /*[MQTT Client]*/, $topic,$msg,0,0);
-  	$this->SendDebug("setStatus", $BufferJSON,0);
+  	$this->SendDebug("setLED", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
+
+    public function setScheme(integer $schemeID) {
+      $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
+      $PrefixIndex = array_search("%prefix%",$FullTopic);
+      $TopicIndex = array_search("%topic%",$FullTopic);
+
+      $SetCommandArr = $FullTopic;
+      $index = count($SetCommandArr);
+
+      $SetCommandArr[$PrefixIndex] = "cmnd";
+      $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
+      $SetCommandArr[$index] = "Scheme";
+
+      $topic = implode("/",$SetCommandArr);
+      $msg = $schemeID;
+
+      $Buffer["Topic"] = $topic;
+      $Buffer["MSG"] = $msg;
+      $BufferJSON = json_encode($Buffer);
+
+      $this->SendDebug("setScheme", $BufferJSON,0);
+      $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+
+    }
+
+    public function setPixel(integr $count) {
+
+    $FullTopic = explode("/",$this->ReadPropertyString("FullTopic"));
+    $PrefixIndex = array_search("%prefix%",$FullTopic);
+    $TopicIndex = array_search("%topic%",$FullTopic);
+
+    $SetCommandArr = $FullTopic;
+    $index = count($SetCommandArr);
+
+    $SetCommandArr[$PrefixIndex] = "cmnd";
+    $SetCommandArr[$TopicIndex] = $this->ReadPropertyString("Topic");
+    $SetCommandArr[$index] = "Pixels";
+
+    $topic = implode("/",$SetCommandArr);
+    $msg = $count;
+
+    $Buffer["Topic"] = $topic;
+    $Buffer["MSG"] = $msg;
+    $BufferJSON = json_encode($Buffer);
+
+    $this->SendDebug("setPixel", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+    }
+
+
 
 }
 
