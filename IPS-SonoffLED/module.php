@@ -54,9 +54,9 @@ class IPS_SonoffLED extends IPSModule {
          $this->SendDebug("Speed MSG", $Buffer->MSG,0);
          $MSG = json_decode($Buffer->MSG);
          if ($MSG->Fade == "ON") {
-            SetValue($this->GetIDForIdent("SonoffLED_Speed"), true);
+            SetValue($this->GetIDForIdent("SonoffLED_Fade"), true);
          } else {
-            SetValue($this->GetIDForIdent("SonoffLED_Speed"), false);
+            SetValue($this->GetIDForIdent("SonoffLED_Fade"), false);
          }
      }
        if (fnmatch("*STATE", $Buffer->TOPIC)) {
