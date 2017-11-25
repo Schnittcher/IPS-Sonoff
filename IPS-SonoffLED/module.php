@@ -128,7 +128,7 @@ class IPS_SonoffLED extends IPSModule {
   }
 
   private function createVariabenProfiles() {
-    $this->RegisterProfileInteger("Speed,Speedo","WS2812","",1,20,1);
+    $this->RegisterProfileInteger("Speed","Speedo","WS2812","",1,20,1);
   }
 
 
