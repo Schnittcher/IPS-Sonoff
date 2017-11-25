@@ -160,7 +160,7 @@ class IPS_SonoffLED extends IPSModule {
         $this->setFade(intval($Value));
         break;
       case 'SonoffLED_Scheme':
-        $this->setSheme($Value);
+        $this->setScheme($Value);
         break;
 
       default:
