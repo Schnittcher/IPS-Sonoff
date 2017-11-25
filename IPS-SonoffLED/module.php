@@ -14,9 +14,8 @@ class IPS_SonoffLED extends IPSModule {
       $this->createVariabenProfiles();
 
       $this->RegisterVariableInteger("SonoffLED_Fade", "Fade");
-      $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","Speed");
-
-
+      $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED-Speed");
+      $this->EnableAction("SonoffLED_Speed");
   }
 
   public function ApplyChanges() {
@@ -125,6 +124,18 @@ class IPS_SonoffLED extends IPSModule {
     $BufferJSON = $this->MQTTCommand($command,$msg);
     $this->SendDebug("setSpeed", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
+
+  public function RequestAction($Ident, $Value) {
+    switch ($Ident) {
+      case 'SonoffLED_Speed':
+        $this->setSpeed($Value);
+        break;
+
+      default:
+        # code...
+        break;
+    }
   }
 
   private function createVariabenProfiles() {
