@@ -13,9 +13,10 @@ class IPS_SonoffLED extends IPSModule {
 
       $this->createVariabenProfiles();
 
-      $this->RegisterVariableInteger("SonoffLED_Fade", "Fade");
+      $this->RegisterVariableInteger("SonoffLED_Fade", "Fade","~Swtich");
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED-Speed");
       $this->EnableAction("SonoffLED_Speed");
+      $this->EnableAction("SonoffLED_Fade");
   }
 
   public function ApplyChanges() {
@@ -42,7 +43,9 @@ class IPS_SonoffLED extends IPSModule {
          $MSG = json_decode($Buffer->MSG);
          SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $MSG->Pixels);
        }
-       if (fnmatch("*SPEED*", $Buffer->MSG)) {
+       if (fnmatch("*Speed*", $Buffer->MSG)) {
+        $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
+        $this->SendDebug("Speed MSG", $Buffer->MSG,0);
         $MSG = json_decode($Buffer->MSG);
         SetValue($this->GetIDForIdent("SonoffLED_Speed"), $MSG->Speed);
       }
@@ -134,6 +137,9 @@ class IPS_SonoffLED extends IPSModule {
     switch ($Ident) {
       case 'SonoffLED_Speed':
         $this->setSpeed($Value);
+        break;
+      case 'SonoffLED_Fade':
+        $this->setFade(intval($Value));
         break;
 
       default:
