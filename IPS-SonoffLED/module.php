@@ -57,10 +57,10 @@ class IPS_SonoffLED extends IPSModule {
           $MSG = json_decode($Buffer->MSG);
           switch ($Buffer->MSG) {
           case $this->ReadPropertyString("On"):
-            SetValue($this->GetIDForIdent("SonoffLED_Power", 0);
+            SetValue($this->GetIDForIdent("SonoffLED_Power", 0));
             break;
           case $this->ReadPropertyString("Off"):
-            SetValue($this->GetIDForIdent("SonoffLED_Power", 1);
+            SetValue($this->GetIDForIdent("SonoffLED_Power", 1));
             break;
           }
         }
