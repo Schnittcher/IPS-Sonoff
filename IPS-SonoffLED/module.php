@@ -16,9 +16,11 @@ class IPS_SonoffLED extends IPSModule {
       $this->RegisterVariableBoolean("SonoffLED_Fade", "Fade","Switch");
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
       $this->RegisterVariableInteger("SonoffLED_Scheme", "Scheme","SonoffLED.Scheme");
+      $this->RegisterVariableInteger("SonoffLED_Color", "Color","HexColor");
       $this->EnableAction("SonoffLED_Speed");
       $this->EnableAction("SonoffLED_Fade");
       $this->EnableAction("SonoffLED_Scheme");
+      $this->EnableAction("SonoffLED_Color");
   }
 
   public function ApplyChanges() {
@@ -57,6 +59,12 @@ class IPS_SonoffLED extends IPSModule {
          $MSG = json_decode($Buffer->MSG);
          SetValue($this->GetIDForIdent("SonoffLED_Scheme"), $MSG->Scheme);
        }
+       if (fnmatch("*Color*", $Buffer->MSG)) {
+          $this->SendDebug("Color Topic", $Buffer->TOPIC,0);
+          $this->SendDebug("Color MSG", $Buffer->MSG,0);
+          $MSG = json_decode($Buffer->MSG);
+          SetValue($this->GetIDForIdent("SonoffLED_Color"), $MSG->Color);
+        }
       if (fnmatch("*Fade*", $Buffer->MSG)) {
          $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
          $this->SendDebug("Speed MSG", $Buffer->MSG,0);
@@ -161,6 +169,9 @@ class IPS_SonoffLED extends IPSModule {
         break;
       case 'SonoffLED_Scheme':
         $this->setScheme($Value);
+        break;
+      case 'SonoffLED_Color':
+        $this->setColor($Value);
         break;
 
       default:
