@@ -7,16 +7,20 @@ class IPS_SonoffLED extends IPSModule {
       $this->ConnectParent("{EE0D345A-CF31-428A-A613-33CE98E752DD}");
       //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
       $this->RegisterPropertyString("Topic","");
+      $this->RegisterPropertyString("On","1");
+      $this->RegisterPropertyString("Off","0");
       $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
       $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
       $this->RegisterVariableInteger("SonoffLED_Pixels", "Pixels");
 
       $this->createVariabenProfiles();
 
+      $this->RegisterVariableBoolean("SonoffLED_Power", "Power","Switch");
       $this->RegisterVariableBoolean("SonoffLED_Fade", "Fade","Switch");
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
       $this->RegisterVariableInteger("SonoffLED_Scheme", "Scheme","SonoffLED.Scheme");
       $this->RegisterVariableInteger("SonoffLED_Color", "Color","HexColor");
+      $this->EnableAction("SonoffLED_Power");
       $this->EnableAction("SonoffLED_Speed");
       $this->EnableAction("SonoffLED_Fade");
       $this->EnableAction("SonoffLED_Scheme");
@@ -47,6 +51,19 @@ class IPS_SonoffLED extends IPSModule {
          $MSG = json_decode($Buffer->MSG);
          SetValue($this->GetIDForIdent("SonoffLED_Pixels"), $MSG->Pixels);
        }
+       if (fnmatch("*POWER*", $Buffer->TOPIC)) {
+          $this->SendDebug("Power Topic", $Buffer->TOPIC,0);
+          $this->SendDebug("Power MSG", $Buffer->MSG,0);
+          $MSG = json_decode($Buffer->MSG);
+          switch ($Buffer->MSG) {
+          case $this->ReadPropertyString("On"):
+            SetValue($this->GetIDForIdent("SonoffLED_Power", 0);
+            break;
+          case $this->ReadPropertyString("Off"):
+            SetValue($this->GetIDForIdent("SonoffLED_Power", 1);
+            break;
+          }
+        }
        if (fnmatch("*Speed*", $Buffer->MSG)) {
           $this->SendDebug("Speed Topic", $Buffer->TOPIC,0);
           $this->SendDebug("Speed MSG", $Buffer->MSG,0);
@@ -159,8 +176,21 @@ class IPS_SonoffLED extends IPSModule {
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
 
+  public function setPower($value) {
+    $command = "Power";
+    $msg = $value;
+    if($msg===false){$msg = 'false';}
+    elseif($msg===true){$msg = 'true';}
+    $BufferJSON = $this->MQTTCommand($command,$msg);
+    $this->SendDebug("setSpeed", $BufferJSON,0);
+    $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
+  }
+
   public function RequestAction($Ident, $Value) {
     switch ($Ident) {
+      case 'SonoffLED_Power':
+        $this->setPower($Value);
+        break;
       case 'SonoffLED_Speed':
         $this->setSpeed($Value);
         break;

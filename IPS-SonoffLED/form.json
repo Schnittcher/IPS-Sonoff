@@ -3,6 +3,9 @@
     [
       { "type": "ValidationTextBox", "name": "Topic", "caption": "Sonoff MQTT Topic" },
       { "type": "Label", "label": "Parameter Einstellungen" },
+      { "type": "Label", "label": "Parameter Einstellungen" },
+      { "type": "ValidationTextBox", "name": "On", "caption": "Power On" },
+      { "type": "ValidationTextBox", "name": "Off", "caption": "Power Off" },
       { "type": "ValidationTextBox", "name": "FullTopic", "caption": "Full Topic" },
 
     { "type": "Label", "label": "Settings" }
