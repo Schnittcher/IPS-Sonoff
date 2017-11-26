@@ -135,11 +135,11 @@ class IPS_SonoffLED extends IPSModule {
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
 
-  public function setColor($color) {
+  public function setColorHex($color) {
     $command = "Color";
-    $msg = $color;
+    $msg = "#".$color;
     $BufferJSON = $this->MQTTCommand($command,$msg);
-    $this->SendDebug("setColor", $BufferJSON,0);
+    $this->SendDebug("setColorHex", $BufferJSON,0);
     $this->SendDataToParent(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Action" => "Publish", "Buffer" => $BufferJSON)));
   }
 
@@ -171,7 +171,7 @@ class IPS_SonoffLED extends IPSModule {
         $this->setScheme($Value);
         break;
       case 'SonoffLED_Color':
-        $this->setColor($Value);
+        $this->setColorHex($Value);
         break;
 
       default:
