@@ -1,3 +1,6 @@
+Dieses Modul wird nicht mehr weiter gepflegt, da es in ein anderes Repo umgezogen ist, bitte die Info im Thread im IP-Symcon Forum lesen: https://www.symcon.de/forum/threads/36262-Modul-Tasmota
+
+
 # IPS-Sonoff
 Mit diesem Modul ist es möglich geflashte Sonoff Geräte kinderleicht in IPS zu integrieren.
 Kommuniziert wird über das MQTT Prokotoll, somit muss der Status der Sonoff Geräte nicht gepollt werden
