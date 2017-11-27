@@ -19,7 +19,7 @@ class IPS_SonoffLED extends IPSModule {
       $this->RegisterVariableInteger("SonoffLED_Scheme", "Scheme","SonoffLED.Scheme",4);
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed",5);
       $this->RegisterVariableInteger("SonoffLED_Pixels", "Pixels","",6);
-      $this->RegisterVariableInteger("SonoffRSSI", "RSSI","SonoffLED.RSSI","",7);
+      $this->RegisterVariableInteger("SonoffRSSI", "RSSI","SonoffLED.RSSI",7);
       $this->EnableAction("SonoffLED_Power");
       $this->EnableAction("SonoffLED_Speed");
       $this->EnableAction("SonoffLED_Fade");
