@@ -20,11 +20,13 @@ class IPS_SonoffLED extends IPSModule {
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
       $this->RegisterVariableInteger("SonoffLED_Scheme", "Scheme","SonoffLED.Scheme");
       $this->RegisterVariableInteger("SonoffLED_Color", "Color","HexColor");
+      $this->RegisterVariableInteger("SonoffLED_Dimmer", "Dimmer","Intensity.100");
       $this->EnableAction("SonoffLED_Power");
       $this->EnableAction("SonoffLED_Speed");
       $this->EnableAction("SonoffLED_Fade");
       $this->EnableAction("SonoffLED_Scheme");
       $this->EnableAction("SonoffLED_Color");
+      $this->EnableAction("SonoffLED_Dimmer");
   }
 
   public function ApplyChanges() {
@@ -76,6 +78,12 @@ class IPS_SonoffLED extends IPSModule {
          $MSG = json_decode($Buffer->MSG);
          SetValue($this->GetIDForIdent("SonoffLED_Scheme"), $MSG->Scheme);
        }
+       if (fnmatch("*Dimmer*", $Buffer->MSG)) {
+          $this->SendDebug("Dimmer Topic", $Buffer->TOPIC,0);
+          $this->SendDebug("Dimmer MSG", $Buffer->MSG,0);
+          $MSG = json_decode($Buffer->MSG);
+          SetValue($this->GetIDForIdent("SonoffLED_Dimmer"), $MSG->Scheme);
+        }
        if (fnmatch("*Color*", $Buffer->MSG)) {
           $this->SendDebug("Color Topic", $Buffer->TOPIC,0);
           $this->SendDebug("Color MSG", $Buffer->MSG,0);
@@ -202,6 +210,9 @@ class IPS_SonoffLED extends IPSModule {
         break;
       case 'SonoffLED_Color':
         $this->setColorHex("#".dechex($Value));
+        break;
+      case 'SonoffLED_Dimmer':
+        $this->setDimmer($Value);
         break;
 
       default:
