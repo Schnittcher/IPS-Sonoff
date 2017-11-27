@@ -16,7 +16,7 @@ class IPS_SonoffLED extends IPSModule {
 
       $this->createVariabenProfiles();
 
-      $this->RegisterVariableFloat("SonoffRSSI", "RSSI","SonoffLED.RSSI");
+      $this->RegisterVariableInteger("SonoffRSSI", "RSSI","SonoffLED.RSSI");
       $this->RegisterVariableBoolean("SonoffLED_Power", "Power","Switch");
       $this->RegisterVariableBoolean("SonoffLED_Fade", "Fade","Switch");
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
