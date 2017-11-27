@@ -10,11 +10,13 @@ class IPS_SonoffLED extends IPSModule {
       $this->RegisterPropertyString("On","1");
       $this->RegisterPropertyString("Off","0");
       $this->RegisterPropertyString("FullTopic","%prefix%/%topic%");
-      $variablenID = $this->RegisterVariableFloat("SonoffRSSI", "RSSI");
+
+
       $this->RegisterVariableInteger("SonoffLED_Pixels", "Pixels");
 
       $this->createVariabenProfiles();
 
+      $this->RegisterVariableFloat("SonoffRSSI", "RSSI","SonoffLED.RSSI");
       $this->RegisterVariableBoolean("SonoffLED_Power", "Power","Switch");
       $this->RegisterVariableBoolean("SonoffLED_Fade", "Fade","Switch");
       $this->RegisterVariableInteger("SonoffLED_Speed", "Speed","SonoffLED.Speed");
@@ -224,6 +226,7 @@ class IPS_SonoffLED extends IPSModule {
   private function createVariabenProfiles() {
     //Speed Profile
     $this->RegisterProfileInteger("SonoffLED.Speed","Speedo","","",1,20,1);
+    $this->RegisterProfileInteger("SonoffLED.RSSI","Intensity","","",1,100,1);
 
     //Scheme Profile
     $this->RegisterProfileIntegerEx("SonoffLED.Scheme", "Shuffle", "", "", Array(
