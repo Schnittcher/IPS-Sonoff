@@ -82,7 +82,7 @@ class IPS_SonoffLED extends IPSModule {
           $this->SendDebug("Dimmer Topic", $Buffer->TOPIC,0);
           $this->SendDebug("Dimmer MSG", $Buffer->MSG,0);
           $MSG = json_decode($Buffer->MSG);
-          SetValue($this->GetIDForIdent("SonoffLED_Dimmer"), $MSG->Scheme);
+          SetValue($this->GetIDForIdent("SonoffLED_Dimmer"), $MSG->Dimmer);
         }
        if (fnmatch("*Color*", $Buffer->MSG)) {
           $this->SendDebug("Color Topic", $Buffer->TOPIC,0);
